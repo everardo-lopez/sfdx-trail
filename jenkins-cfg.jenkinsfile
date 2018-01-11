@@ -34,6 +34,7 @@ node {
             SFDC_USERNAME=robj.result.username
             robj = null
             rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:user:password:generate --targetusername ${SFDC_USERNAME} --json".trim()
+            println "password: ${rmsg}"
             robj = jsonSlurper.parseText(rmsg)
             if (robj.status != 0) { error 'org user password generation failed: ' + robj.message }
             SFDC_USERPWD=robj.result.password
