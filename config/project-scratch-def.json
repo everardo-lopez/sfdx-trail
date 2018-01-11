@@ -1,0 +1,8 @@
+{
+  "edition": "Enterprise",
+  "features": "API",
+  "orgPreferences": {
+    "enabled": [],
+    "disabled": []
+  }
+}
