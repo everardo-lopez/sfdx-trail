@@ -33,7 +33,6 @@ node {
             if (robj.status != 0) { error 'org creation failed: ' + robj.message }
             SFDC_USERNAME=robj.result.username
             robj = null
-            rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:user:password:generate --targetusername ${SFDC_USERNAME} --loglevel info"
         }
 
         stage('Push To Test Org') {
