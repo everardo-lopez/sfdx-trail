@@ -34,6 +34,20 @@ node {
             SFDC_USERNAME=robj.result.username
             robj = null
         }
+        
+        stage('Se password Scratch Org') {
+
+            // need to pull out assigned username
+            //rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:org:create --definitionfile config/project-scratch-def.json --json --setdefaultusername".trim()
+            rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:user:password:generate  --json --targetusername ${SFDC_USERNAME}"
+            printf rmsg
+            def jsonSlurper = new JsonSlurperClassic()
+            def robj = jsonSlurper.parseText(rmsg)
+            if (robj.status != 0) { error 'org password generation failed: ' + robj.message }
+            SFDC_USERPWD=robj.result.password
+            printf SFDC_USERPWD
+            robj = null
+        }
 
         stage('Push To Test Org') {
             rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:push --targetusername ${SFDC_USERNAME}"
