@@ -90,6 +90,7 @@ node {
                 }
             }
             if (failingClasses.size() > 0) {
+                echo failingClasses
                 def classnamesString = failingClasses.toString()
                 //error 'No se cumple con la covertura de código'
                 error "Las siguientes clases no cumplieron con la cobertura de codigo: \n ${classnamesString}"
