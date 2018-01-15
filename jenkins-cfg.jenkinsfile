@@ -35,7 +35,7 @@ node {
             robj = null
         }
         
-        stage('Se password Scratch Org') {
+        /*stage('Se password Scratch Org') {
 
             // need to pull out assigned username
             //rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:org:create --definitionfile config/project-scratch-def.json --json --setdefaultusername".trim()
@@ -47,7 +47,7 @@ node {
             SFDC_USERPWD=robj.result.password
             printf SFDC_USERPWD
             robj = null
-        }
+        }*/
 
         stage('Push To Test Org') {
             rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:source:push --targetusername ${SFDC_USERNAME}"
@@ -90,8 +90,7 @@ node {
                 }
             }
             if (failingClasses.size() > 0) {
-                echo 'error de cobertura'
-                //error 'No se cumple con la covertura de código'
+                error 'No se cumple con la covertura de código'
                 //error "Las siguientes clases no cumplieron con la cobertura de codigo: \n ${failingClasses.join(',')}"
             }
         }
