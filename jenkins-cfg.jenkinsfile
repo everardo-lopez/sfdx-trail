@@ -83,25 +83,25 @@ node {
                 if (coverage < 70) {
                     failingClasses.add(className)
                 }
-                /*thisResult.each { k, v ->
-                    if (k == "name") {
-                        className = v
-                    } else if (k == "coveredPercent") {
-                        if (v < 70) {
-                            failingClasses.add(className)
-                        }
-                    }
-                }*/
             }
             if (failingClasses.size() > 0) {
                 def classnamesString = failingClasses.toString()
-                //error 'No se cumple con la covertura de código'
                 error "Las siguientes clases no cumplieron con la cobertura de codigo: \n ${classnamesString}"
             }
         }
 
         stage('collect results') {
             junit keepLongStdio: true, testResults: 'tests/**/*-junit.xml'
+        }
+
+        stage('Delete Test Org') {
+
+            timeout(time: 120, unit: 'SECONDS') {
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:org:delete --targetusername ${SFDC_USERNAME} --noprompt"
+                if (rc != 0) {
+                    error 'org deletion request failed'
+                }
+            }
         }
     }
 }
