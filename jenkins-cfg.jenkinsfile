@@ -72,9 +72,10 @@ node {
         }
 
         stage('Check Test Coverage') {
+            def jsonSlurper = new JsonSlurperClassic()
             def failingClasses = []
             def inputFile = new File("${RUN_ARTIFACT_DIR}/test-result-codecoverage.json")
-            def inputJSON = new JsonSlurper().parse(inputFile)
+            def inputJSON = jsonSlurper.parse(inputFile)
             for (Map thisResult : inputJSON) {
                 def className
                 thisResult.each { k, v ->
