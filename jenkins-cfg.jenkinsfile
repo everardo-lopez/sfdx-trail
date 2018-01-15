@@ -71,6 +71,27 @@ node {
             }
         }
 
+        stage('Check Test Coverage') {
+            def failingClasses = []
+            def inputFile = new File("${RUN_ARTIFACT_DIR}/test-result-codecoverage.json")
+            def inputJSON = new JsonSlurper().parse(inputFile)
+            for (Map thisResult : inputJSON) {
+                def className
+                thisResult.each { k, v ->
+                    if (k == "name") {
+                        className = v
+                    } else if (k == "coveredPercent") {
+                        if (v < 70) {
+                            failingClasses.add(className)
+                        }
+                    }
+                }
+            }
+            if (failingClasses.size() <= 0) {
+                error "Las siguientes clases no cumplieron con la cobertura de 70%: \n ${failingClasses.join(',')}"
+            }
+        }
+
         stage('collect results') {
             junit keepLongStdio: true, testResults: 'tests/**/*-junit.xml'
         }
