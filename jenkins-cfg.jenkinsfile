@@ -78,8 +78,12 @@ node {
             def inputFile = new File("${workspace}/${RUN_ARTIFACT_DIR}/test-result-codecoverage.json")
             def inputJSON = jsonSlurper.parse(inputFile)
             for (Map thisResult : inputJSON) {
-                def className
-                thisResult.each { k, v ->
+                def className = thisResult.get('name')
+                def coverage = thisResult.get('coveredPercent')
+                if (coverage < 70) {
+                    failingClasses.add(className)
+                }
+                /*thisResult.each { k, v ->
                     if (k == "name") {
                         className = v
                     } else if (k == "coveredPercent") {
@@ -87,10 +91,9 @@ node {
                             failingClasses.add(className)
                         }
                     }
-                }
+                }*/
             }
             if (failingClasses.size() > 0) {
-                echo failingClasses
                 def classnamesString = failingClasses.toString()
                 //error 'No se cumple con la covertura de código'
                 error "Las siguientes clases no cumplieron con la cobertura de codigo: \n ${classnamesString}"
