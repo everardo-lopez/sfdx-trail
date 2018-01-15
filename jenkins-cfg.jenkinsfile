@@ -86,7 +86,7 @@ node {
             }
             if (failingClasses.size() > 0) {
                 def classnamesString = failingClasses.toString()
-                echo "Las siguientes clases no cumplieron con la cobertura de codigo: \n ${classnamesString}"
+                echo "ERROR: Las siguientes clases no cumplieron con la cobertura de codigo: \n ${classnamesString}"
                 currentBuild.result = 'FAIL'
             }
         }
