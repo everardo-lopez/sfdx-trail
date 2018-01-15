@@ -72,9 +72,10 @@ node {
         }
 
         stage('Check Test Coverage') {
+            def workspace = pwd()
             def jsonSlurper = new JsonSlurperClassic()
             def failingClasses = []
-            def inputFile = new File("${RUN_ARTIFACT_DIR}/test-result-codecoverage.json")
+            def inputFile = new File("${workspace}/${RUN_ARTIFACT_DIR}/test-result-codecoverage.json")
             def inputJSON = jsonSlurper.parse(inputFile)
             for (Map thisResult : inputJSON) {
                 def className
