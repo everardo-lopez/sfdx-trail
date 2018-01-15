@@ -72,7 +72,6 @@ node {
         }
 
         stage('collect results') {
-            sh "${SFDC_USERPWD} > sfdx_pwd.txt"
             junit keepLongStdio: true, testResults: 'tests/**/*-junit.xml'
         }
     }
