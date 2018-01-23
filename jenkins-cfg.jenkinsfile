@@ -4,6 +4,8 @@ node {
 
     def BUILD_NUMBER=env.BUILD_NUMBER
     def RUN_ARTIFACT_DIR="tests/${BUILD_NUMBER}"
+    def CLASSES_ARTIFACT_DIR="main/default/classes"
+    def TESTS_ARTIFACT_DIR="test/default/classes"
     def SFDC_USERNAME
     def SFDC_USERPWD
 
@@ -58,6 +60,23 @@ node {
             rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:user:permset:assign --targetusername ${SFDC_USERNAME} --permsetname DreamHouse"
             if (rc != 0) {
                 error 'permset:assign failed'
+            }
+        }
+
+        stage('Check Missing Tests') {
+            def workspace = pwd()
+            def missingTestClasses = []
+            def classes = new FileNameFinder().getFileNames("${workspace}/${CLASSES_ARTIFACT_DIR}", '**/*.cls' /* includes */)
+            def tests = new FileNameFinder().getFileNames("${workspace}/${TESTS_ARTIFACT_DIR}", '**/*.cls' /* includes */)
+            for(String className : classes){
+                def fixedTestName = className.replace('.cls','Test.cls')
+                if(!tests.contains(fixedTestName))
+                    missingTestClasses.add(className)
+            }
+            if (missingTestClasses.size() > 0) {
+                def classnamesString = missingTestClasses.toString()
+                echo "ERROR: Las siguientes clases no tienen Unit Test: \n ${classnamesString}"
+                currentBuild.result = 'FAIL'
             }
         }
 
