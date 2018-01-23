@@ -1,6 +1,6 @@
 
 @isTest
-private class DemoControllerTests {
+private class DemoControllerTest {
     @isTest static void testConstructor() {
     	Contact contact = new Contact(LastName='Smith');
     	insert contact;
