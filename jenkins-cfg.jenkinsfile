@@ -4,8 +4,8 @@ node {
 
     def BUILD_NUMBER=env.BUILD_NUMBER
     def RUN_ARTIFACT_DIR="tests/${BUILD_NUMBER}"
-    def CLASSES_ARTIFACT_DIR="main/default/classes"
-    def TESTS_ARTIFACT_DIR="test/default/classes"
+    def CLASSES_ARTIFACT_DIR="force-app/main/default/classes"
+    def TESTS_ARTIFACT_DIR="force-app/test/default/classes"
     def SFDC_USERNAME
     def SFDC_USERPWD
 
