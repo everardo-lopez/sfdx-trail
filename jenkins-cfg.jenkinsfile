@@ -31,7 +31,15 @@ node {
             for(String className : classes){
                 def classActualName = className.substring(className.lastIndexOf('/') + 1,className.size())
                 def fixedTestName = classActualName.replace('.cls','Test.cls')
-                if(!tests.contains(fixedTestName))
+                def found = false
+                for(String testClassName : tests){
+                    def testActualName = testClassName.substring(testClassName.lastIndexOf('/') + 1,testClassName.size())
+                    if(testActualName.equals(fixedTestName)){
+                        found = true
+                        break
+                    }
+                }
+                if(!found)
                     missingTestClasses.add(classActualName)
             }
             if (missingTestClasses.size() > 0) {
