@@ -30,7 +30,7 @@ node {
             def tests = new FileNameFinder().getFileNames("${workspace}/${TESTS_ARTIFACT_DIR}", '**/*.cls' /* includes */)
             for(String className : classes){
                 def classActualName = className.substring(className.lastIndexOf('/'),className.size())
-                def fixedTestName = classActualName.subString.replace('.cls','Test.cls')
+                def fixedTestName = classActualName.replace('.cls','Test.cls')
                 if(!tests.contains(fixedTestName))
                     missingTestClasses.add(classActualName)
             }
