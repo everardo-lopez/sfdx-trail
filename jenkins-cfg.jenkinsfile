@@ -22,6 +22,25 @@ node {
     }
 
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
+
+        stage('Check Missing Tests') {
+            def workspace = pwd()
+            def missingTestClasses = []
+            def classes = new FileNameFinder().getFileNames("${workspace}/${CLASSES_ARTIFACT_DIR}", '**/*.cls' /* includes */)
+            def tests = new FileNameFinder().getFileNames("${workspace}/${TESTS_ARTIFACT_DIR}", '**/*.cls' /* includes */)
+            for(String className : classes){
+                def classActualName = className.substring(className.lastIndexOf('/'),className.length)
+                def fixedTestName = classActualName.subString.replace('.cls','Test.cls')
+                if(!tests.contains(fixedTestName))
+                    missingTestClasses.add(classActualName)
+            }
+            if (missingTestClasses.size() > 0) {
+                def classnamesString = missingTestClasses.toString()
+                error "ERROR: Las siguientes clases no tienen Unit Test: \n ${classnamesString}"
+                currentBuild.result = 'FAIL'
+            }
+        }
+
         stage('Create Scratch Org') {
 
             rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
@@ -60,23 +79,6 @@ node {
             rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:user:permset:assign --targetusername ${SFDC_USERNAME} --permsetname DreamHouse"
             if (rc != 0) {
                 error 'permset:assign failed'
-            }
-        }
-
-        stage('Check Missing Tests') {
-            def workspace = pwd()
-            def missingTestClasses = []
-            def classes = new FileNameFinder().getFileNames("${workspace}/${CLASSES_ARTIFACT_DIR}", '**/*.cls' /* includes */)
-            def tests = new FileNameFinder().getFileNames("${workspace}/${TESTS_ARTIFACT_DIR}", '**/*.cls' /* includes */)
-            for(String className : classes){
-                def fixedTestName = className.replace('.cls','Test.cls')
-                if(!tests.contains(fixedTestName))
-                    missingTestClasses.add(className)
-            }
-            if (missingTestClasses.size() > 0) {
-                def classnamesString = missingTestClasses.toString()
-                echo "ERROR: Las siguientes clases no tienen Unit Test: \n ${classnamesString}"
-                currentBuild.result = 'FAIL'
             }
         }
 
